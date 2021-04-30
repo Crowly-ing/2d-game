@@ -2,8 +2,17 @@
 <style>
     body {
         margin: 0;
+        background-image: url("img/bg.png");
     }
 </style>
-<div class="fixed text-white text-sm ml-5 mt-2 select-none"><span>Score:</span><span id="scoreEl">0</span></div>
+<div class="fixed text-white text-sm ml-5 mt-2 select-none font-bold text-3xl"><span>Score:</span><span id="scoreEl">0</span></div>
+<div class="fixed inset-0 flex items-center justify-center" id="modalEl">
+    <div class="bg-green-200 max-w-md w-full p-6 text-center">
+        <h1 class="text-4xl font-bold leading-none" id="bigScoreEl">0</h1>
+        <p class="text-sm text-gray-700">Points</p>
+        <div><button class="bg-blue-500 text-white w-full py-3 rounded-full text-sm" id="startGameBtn">Start Game</button></div>
+    </div>
+</div>
+
 <canvas></canvas>
 <script src="./index.js"></script>

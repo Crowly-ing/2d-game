@@ -5,6 +5,9 @@ canvas.width = innerWidth
 canvas.height = innerHeight
 
 const scoreEl = document.querySelector('#scoreEl')
+const startGameBtn = document.querySelector('#startGameBtn')
+const modalEl = document.querySelector('#modalEl')
+const bigScoreEl = document.querySelector('#bigScoreEl')
 class Player {
     constructor(x, y, width, height, color) {
         this.x = x
@@ -77,10 +80,21 @@ function loadImages() {
 const x = canvas.width / 5
 const y = canvas.height / 2
 loadImages()
-const player = new Player(x, y, 10, canvas.height / 5 * 4, 'red')
 
-const bullets = []
-const enemies = []
+let player = new Player(x, y, 10, canvas.height / 5 * 4, 'red')
+let bullets = []
+let enemies = []
+
+function init() {
+    player = new Player(x, y, 10, canvas.height / 5 * 4, 'red')
+    bullet = []
+    enemies = []
+    score = 0
+    scoreEl.innerHTML = score
+    if (score > bigScoreEl.innerHTML) {
+        bigScoreEl.innerHTML = score
+    }
+}
 
 function spawnEnemies() {
     setInterval(() => {
@@ -127,6 +141,10 @@ function animate() {
             player.y - enemy.y)
         if (dist - enemy.radius < 1) {
             cancelAnimationFrame(animationId)
+            modalEl.style.display = 'flex'
+            if (score > bigScoreEl.innerHTML) {
+                bigScoreEl.innerHTML = score
+            }
         }
         bullets.forEach((bullet, bulletIndex) => {
             const dist = Math.hypot(bullet.x - enemy.x,
@@ -154,5 +172,9 @@ addEventListener('click', (event) => {
         5, 'black', velocity))
 })
 
-animate()
-spawnEnemies()
+startGameBtn.addEventListener('click', () => {
+    init()
+    animate()
+    spawnEnemies()
+    modalEl.style.display = 'none'
+})
