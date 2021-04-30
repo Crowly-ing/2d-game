@@ -76,12 +76,35 @@ class Enemy {
     }
 }
 
+class Boss {
+    constructor(x, y, radius, color, velocity) {
+        this.x = x
+        this.y = y
+        this.radius = radius
+        this.color = color
+        this.velocity = velocity
+    }
+
+    draw() {
+        c.beginPath()
+        c.drawImage(bossImage, this.x, this.y, canvas.width / 2, canvas.height / 1)
+    }
+
+    update() {
+        this.draw()
+        this.x = this.x + this.velocity.x
+        this.y = this.y + this.velocity.y
+    }
+}
+
 function loadImages() {
+    bossImage = new Image()
     enemyImage = new Image()
     playerImage = new Image()
     bulletImage = new Image()
     homeImage = new Image()
 
+    bossImage.src = "img/boss.png"
     enemyImage.src = "img/enemy.png"
     playerImage.src = "img/player.png"
     bulletImage.src = "img/bullet.png"
@@ -96,7 +119,8 @@ function init() {
     player = new Player(x, y, 10, canvas.height / 5 * 4, 'red')
     bullets = []
     enemies = []
-    score = 0
+    bosses = []
+    score = 10
     scoreEl.innerHTML = score
     if (score > bigScoreEl.innerHTML) {
         bigScoreEl.innerHTML = score
@@ -117,13 +141,26 @@ function spawnEnemies() {
             y: Math.sin(angle)
         }
         enemies.push(new Enemy(x, y, radius, color, velocity))
-        player.update()
     }, 1000)
+}
 
+function spawnBoss() {
+    const x = Math.random() * canvas.width / 5 + canvas.width
+    const y = Math.random() * canvas.height / 2
+    const radius = 1
+    const color = 'green'
+    const angle = Math.atan2(
+        canvas.height / 2 - y,
+        canvas.width / 5 - x)
+    const velocity = {
+        x: Math.cos(angle),
+        y: Math.sin(angle)
+    }
+    bosses.push(new Boss(x, y, radius, color, velocity))
 }
 
 let animationId
-let score = 0
+let score = 10
 
 function animate() {
     animationId = requestAnimationFrame(animate)
@@ -164,6 +201,33 @@ function animate() {
                     scoreEl.innerHTML = score
                     enemies.splice(index, 1)
                     bullets.splice(bulletIndex, 1)
+                    if (score > 1000)
+                        spawnBoss()
+                }, 0)
+            }
+        })
+    })
+    bosses.forEach((boss, index) => {
+        boss.update()
+
+        const dist = Math.hypot(player.x - boss.x,
+            player.y - boss.y)
+        if (dist - boss.radius < 1) {
+            cancelAnimationFrame(animationId)
+            modalEl.style.display = 'flex'
+            if (score > bigScoreEl.innerHTML) {
+                bigScoreEl.innerHTML = score
+            }
+        }
+        bullets.forEach((bullet, bulletIndex) => {
+            const dist = Math.hypot(bullet.x - boss.x,
+                bullet.y - boss.y)
+            if (dist - boss.radius - bullet.radius < 1) {
+                setTimeout(() => {
+                    score += 10000
+                    scoreEl.innerHTML = score
+                    bosses.splice(index, 1)
+                    bullets.splice(bulletIndex, 1)
                 }, 0)
             }
         })
@@ -179,6 +243,10 @@ addEventListener('click', (event) => {
     }
     bullets.push(new Bullet(player.x, player.y,
         5, 'black', velocity))
+    score -= 45
+    scoreEl.innerHTML = score
+    player.update()
+
 })
 
 startGameBtn.addEventListener('click', () => {
