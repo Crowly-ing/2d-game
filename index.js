@@ -15,12 +15,23 @@ class Player {
         this.width = width
         this.height = height
         this.color = color
+        this.b = 50
     }
 
     draw() {
         c.beginPath()
         c.drawImage(playerImage, this.x, this.y, canvas.width / 10, canvas.height / 5)
     }
+
+    update() {
+        this.draw()
+        if (this.y <= canvas.height / 8)
+            this.b = 50
+        if (this.y >= canvas.height / 8 * 6)
+            this.b = -50
+        this.y = this.y + this.b
+    }
+
 }
 
 class Bullet {
@@ -40,7 +51,7 @@ class Bullet {
     update() {
         this.draw()
         this.x = this.x + this.velocity.x
-        this.y = this.y
+        this.y = this.y + this.velocity.y
     }
 }
 
@@ -81,13 +92,9 @@ const x = canvas.width / 5
 const y = canvas.height / 2
 loadImages()
 
-let player = new Player(x, y, 10, canvas.height / 5 * 4, 'red')
-let bullets = []
-let enemies = []
-
 function init() {
     player = new Player(x, y, 10, canvas.height / 5 * 4, 'red')
-    bullet = []
+    bullets = []
     enemies = []
     score = 0
     scoreEl.innerHTML = score
@@ -110,7 +117,9 @@ function spawnEnemies() {
             y: Math.sin(angle)
         }
         enemies.push(new Enemy(x, y, radius, color, velocity))
+        player.update()
     }, 1000)
+
 }
 
 let animationId
@@ -166,7 +175,7 @@ addEventListener('click', (event) => {
         event.clientX - canvas.width / 5)
     const velocity = {
         x: Math.abs(Math.cos(angle)),
-        y: Math.abs(Math.sin(angle))
+        y: (Math.sin(angle))
     }
     bullets.push(new Bullet(player.x, player.y,
         5, 'black', velocity))
