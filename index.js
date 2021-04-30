@@ -4,6 +4,7 @@ const c = canvas.getContext('2d')
 canvas.width = innerWidth
 canvas.height = innerHeight
 
+const scoreEl = document.querySelector('#scoreEl')
 class Player {
     constructor(x, y, width, height, color) {
         this.x = x
@@ -99,6 +100,7 @@ function spawnEnemies() {
 }
 
 let animationId
+let score = 0
 
 function animate() {
     animationId = requestAnimationFrame(animate)
@@ -131,6 +133,8 @@ function animate() {
                 bullet.y - enemy.y)
             if (dist - enemy.radius - bullet.radius < 1) {
                 setTimeout(() => {
+                    score += 100
+                    scoreEl.innerHTML = score
                     enemies.splice(index, 1)
                     bullets.splice(bulletIndex, 1)
                 }, 0)
